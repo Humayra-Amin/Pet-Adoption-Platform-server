@@ -29,6 +29,29 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+
+    const petCollection = client.db("petAdoptionDb").collection("pets");
+
+ // get route to add a new pet
+    app.get('/pets', async (req, res) => {
+      const cursor = petCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // post route to add a new pet
+    app.post('/pets', async (req, res) => {
+      try {
+        const newPet = req.body;
+        const result = await petCollection.insertOne(newPet);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error('Error inserting pet:', error);
+        res.status(500).send({ error: 'An error occurred while adding the pet' });
+      }
+    });
+
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -42,9 +65,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Pet Adoption Server Started')
-  })
-  
-  app.listen(port, () => {
-    console.log(`Server started on http://localhost: ${port}`)
-  })
+  res.send('Pet Adoption Server Started')
+})
+
+app.listen(port, () => {
+  console.log(`Server started on http://localhost: ${port}`)
+})
