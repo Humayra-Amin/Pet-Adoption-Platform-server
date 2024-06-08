@@ -31,8 +31,10 @@ async function run() {
     // await client.connect();
 
     const petCollection = client.db("petAdoptionDb").collection("pets");
+    const UserCollection = client.db("petAdoptionDb").collection("User");
 
- // get route to add a new pet
+
+    // get route to add a new pet
     app.get('/pets', async (req, res) => {
       const cursor = petCollection.find();
       const result = await cursor.toArray();
@@ -50,6 +52,28 @@ async function run() {
         res.status(500).send({ error: 'An error occurred while adding the pet' });
       }
     });
+
+    app.post('/User', async (req, res) => {
+      const { email, name, role } = req.body;
+      if (!email || !name || !role) {
+        return res.status(400).send({ message: 'Email, name and role are required' });
+      }
+
+      try {
+        const query = { email: email };
+        const existingUser = await UserCollection.findOne(query);
+
+        if (existingUser) {
+          return res.send({ message: 'User already exists', insertedId: null });
+        }
+
+        const result = await UserCollection.insertOne({ email, name, role });
+        res.send(result);
+      } catch (error) {
+        console.error('Error creating user:', error)
+        res.status(500).send({message: 'Internal server error'})
+      }
+    })
 
 
     // Send a ping to confirm a successful connection
