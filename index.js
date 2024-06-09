@@ -34,6 +34,8 @@ async function run() {
 
     const petCollection = client.db("petAdoptionDb").collection("pets");
     const UserCollection = client.db("petAdoptionDb").collection("User");
+    const donationCollection = client.db("petAdoptionDb").collection("donations");
+
 
     // jwt related api
     app.post('/jwt', async (req, res) => {
@@ -71,6 +73,25 @@ async function run() {
       }
     });
 
+        // get route to add a donation campaign
+        app.get('/donations', async (req, res) => {
+          const cursor = donationCollection.find();
+          const result = await cursor.toArray();
+          res.send(result);
+        });
+
+    // Post route to add a donation campaign
+    app.post('/donations', async (req, res) => {
+      try {
+        const newDonationCampaign = req.body;
+        const result = await donationCollection.insertOne(newDonationCampaign);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error('Error inserting donation campaign:', error);
+        res.status(500).send({ error: 'An error occurred while creating the donation campaign' });
+      }
+    });
+
     app.post('/User', verifyToken, async (req, res) => {
       const { email, name, role } = req.body;
       if (!email || !name || !role) {
@@ -93,7 +114,20 @@ async function run() {
       }
     })
 
-    
+    // app.post('/create-payment-intent', async (req, res) => {
+    //   const { price } = req.body;
+    //   const amount = parseInt(parse * 100)
+
+    //   const paymentIntent = await stripe.paymentIntents.create({
+    //     amount: amount,
+    //     currency: 'usd',
+    //     payment_method_types: ['card']
+    //   })
+    //   res.send({
+    //     clientSecret: paymentIntent.client_secret
+    //   })
+    // })
+
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
