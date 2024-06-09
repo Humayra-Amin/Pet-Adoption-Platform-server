@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -33,6 +35,22 @@ async function run() {
     const petCollection = client.db("petAdoptionDb").collection("pets");
     const UserCollection = client.db("petAdoptionDb").collection("User");
 
+    // jwt related api
+    app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      res.send({ token })
+    })
+
+    // middlewares
+    const verifyToken = (req, res, next) => {
+      console.log('inside verify token', req.headers);
+      if (!req.headers.authorization) {
+        return req.status(401).send({ message: 'forbidden access' });
+      }
+      const token = req.headers.authorization.split(' ')[1];
+      // next();
+    }
 
     // get route to add a new pet
     app.get('/pets', async (req, res) => {
@@ -53,7 +71,7 @@ async function run() {
       }
     });
 
-    app.post('/User', async (req, res) => {
+    app.post('/User', verifyToken, async (req, res) => {
       const { email, name, role } = req.body;
       if (!email || !name || !role) {
         return res.status(400).send({ message: 'Email, name and role are required' });
@@ -71,10 +89,11 @@ async function run() {
         res.send(result);
       } catch (error) {
         console.error('Error creating user:', error)
-        res.status(500).send({message: 'Internal server error'})
+        res.status(500).send({ message: 'Internal server error' })
       }
     })
 
+    
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
