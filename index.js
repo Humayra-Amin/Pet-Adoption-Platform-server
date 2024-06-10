@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://pet-adoption-a621f.web.app", "https://pet-adoption-a621f.firebaseapp.com"],
 }));
 app.use(express.json());
 
@@ -73,12 +73,12 @@ async function run() {
       }
     });
 
-        // get route to add a donation campaign
-        app.get('/donations', async (req, res) => {
-          const cursor = donationCollection.find();
-          const result = await cursor.toArray();
-          res.send(result);
-        });
+    // get route to add a donation campaign
+    app.get('/donations', async (req, res) => {
+      const cursor = donationCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // Post route to add a donation campaign
     app.post('/donations', async (req, res) => {
@@ -112,7 +112,36 @@ async function run() {
         console.error('Error creating user:', error)
         res.status(500).send({ message: 'Internal server error' })
       }
-    })
+    });
+
+    //  get user
+    app.get('/user', async (req, res) => {
+      const result = await UserCollection.find().toArray();
+      res.send(result);
+    });
+
+    //  Get user by Email
+    app.get('/userDetails/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = UserCollection.find(query);
+      const results = await cursor.toArray();
+      res.send(results);
+    });
+
+    app.get('/petDetails/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await petCollection.findOne(query);
+      res.send(result);
+    });
+
+    // app.get('/donationCampaignDetailsById/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) }
+    //   const result = await donationCollection.findOne(query);
+    //   res.send(result);
+    // });
 
     // app.post('/create-payment-intent', async (req, res) => {
     //   const { price } = req.body;
