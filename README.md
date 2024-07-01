@@ -30,11 +30,20 @@ This project is a web application for managing pet adoption and donation campaig
 
 - https://pet-adoption-a621f.web.app/
 
-# React + Vite
+## Used Technologies:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- React
+- Tailwind CSS
+- Firebase(Authentication and Hosting)
+- MongoDB
+- Nodejs
+- Expressjs
 
-Currently, two official plugins are available:
+## To clone this project follow the below steps: 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Go the repository that you want to clone
+- Copy the code URL from the green "Code" button. can copy either SSH if SSH key is set up or else copy HTTPS.
+- Now open the Command Prompt of that folder where the clone repository will be set.
+- Now in command prompt terminal give command 'git clone copied-link' (copied-link is the link that are copied from the repository).
+- After all the steps done the project will be cloned.
+- Also can checked if the cloning is done correctly by giving command 'git remote -v' in terminal.
